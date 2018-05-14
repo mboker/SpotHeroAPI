@@ -1,0 +1,30 @@
+version: '3'
+
+services: 
+  mysql:
+    image: mysql:latest
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=spothero
+      - MYSQL_USER=spothero
+      - MYSQL_PASSWORD=spothero
+  spothero:
+    image: mboker/spothero:latest
+    networks:
+      - backend
+    depends_on:
+      - mysql
+    ports:
+      - 80:8080
+    command: ["./wait-for-it.sh"," mysql:3306", "--", "java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.war"]
+    environment:
+      - DATABASE_HOST=mysql
+      - DATABASE_USER=spothero
+      - DATABASE_PASSWORD=spothero
+      - DATABASE_NAME=spothero
+      - DATABASE_PORT=3306
+
+networks:
+  backend:
